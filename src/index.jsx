@@ -7,12 +7,12 @@ import configureStore from './configureStore';
 import App from './components/App';
 import './favicon.ico';
 import './index.scss';
-import './fallback.pdf';
-// TODO: IMPLEMENT IN SERVER
-import './offline.pdf';
-import './online.pdf';
-import './offline_playable.json';
-import './online_playable.json';
+import './fallback_playable.pdf';
+// SERVER EMULATION
+import './default_playable.pdf';
+import './playable.pdf';
+import './default_playable.json';
+import './playable.json';
 
 const store = configureStore();
 render(

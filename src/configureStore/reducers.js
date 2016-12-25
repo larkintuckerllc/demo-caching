@@ -1,15 +1,15 @@
 import { combineReducers } from 'redux';
 import appBlocking from '../ducks/appBlocking';
-import offlinePlayable from '../ducks/offlinePlayable';
-import onlinePlayable from '../ducks/onlinePlayable';
+import defaultPlayable from '../ducks/defaultPlayable';
+import playable from '../ducks/playable';
 import fallbackPlayable from '../ducks/fallbackPlayable';
 import currentFile from '../ducks/currentFile';
 import currentPage from '../ducks/currentPage';
 
 export default combineReducers({
   appBlocking,
-  offlinePlayable,
-  onlinePlayable,
+  defaultPlayable,
+  playable,
   fallbackPlayable,
   currentFile,
   currentPage,

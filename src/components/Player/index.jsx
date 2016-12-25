@@ -5,7 +5,6 @@ import { convertDataURIToBinary } from '../../util/misc';
 import * as fromCurrentPage from '../../ducks/currentPage';
 import styles from './index.scss';
 
-// TODO: REFACTOR TO ALLOW CHANGING OF CURRENTFILE
 const INTERVAL = 10;
 class Player extends Component {
   componentDidMount() {
@@ -18,6 +17,7 @@ class Player extends Component {
     const rootHeight = rootEl.offsetHeight;
     pdfjsLib.PDFJS.workerSrc = './pdf.worker.bundle.js';
     const loadingTask = pdfjsLib.getDocument(convertDataURIToBinary(currentFile));
+    // TODO: REFACTOR BY PULLLING OUT RENDER PAGE
     loadingTask.promise.then(pdfDocument => {
       this.renderPage = pageNumber => {
         pdfDocument.getPage(pageNumber).then(pdfPage => {
@@ -38,6 +38,7 @@ class Player extends Component {
         });
       };
       const numPages = pdfDocument.numPages;
+      // TODO: REFACTOR OUT DUPLICATE
       this.coverEl.style.opacity = 0;
       this.renderPage(currentPage);
       window.setTimeout(() => {

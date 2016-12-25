@@ -1,11 +1,11 @@
 import { get, getFile } from '../util/rest';
 
-let onlinePlayableFile = null;
+let playableFile = null;
 const delay = (ms) => new Promise(resolve => window.setTimeout(resolve, ms));
-const getUrl = () => get('online_playable.json')
+const getUrl = () => get('playable.json')
   .then((response) => (response.url === '' ? null : response.url));
 // eslint-disable-next-line
-export const getOnlinePlayable = () =>
+export const getPlayable = () =>
   delay(2000)
     .then(getUrl)
     .then(url => {
@@ -19,10 +19,10 @@ export const getOnlinePlayable = () =>
     })
     .then(({ url, file }) => {
       if (url === null) {
-        onlinePlayableFile = null;
+        playableFile = null;
         return url;
       }
-      onlinePlayableFile = file;
+      playableFile = file;
       return url;
     });
-export const getOnlinePlayableFile = () => onlinePlayableFile;
+export const getPlayableFile = () => playableFile;
