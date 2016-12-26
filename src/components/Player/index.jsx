@@ -11,39 +11,16 @@ class Player extends Component {
     const { currentFile, currentPage, setCurrentPage } = this.props;
     let intervalPage = currentPage;
     const rootEl = document.getElementById(styles.root);
-    const canvasEl = document.getElementById(styles.rootCanvas);
+    this.rootWidth = rootEl.offsetWidth;
+    this.rootHeight = rootEl.offsetHeight;
+    this.canvasEl = document.getElementById(styles.rootCanvas);
     this.coverEl = document.getElementById(styles.rootCover);
-    const rootWidth = rootEl.offsetWidth;
-    const rootHeight = rootEl.offsetHeight;
     pdfjsLib.PDFJS.workerSrc = './pdf.worker.bundle.js';
     const loadingTask = pdfjsLib.getDocument(convertDataURIToBinary(currentFile));
-    // TODO: REFACTOR BY PULLLING OUT RENDER PAGE
     loadingTask.promise.then(pdfDocument => {
-      this.renderPage = pageNumber => {
-        pdfDocument.getPage(pageNumber).then(pdfPage => {
-          let viewport = pdfPage.getViewport(1);
-          const pdfWidth = viewport.width;
-          const pdfHeight = viewport.height;
-          const scaleX = rootWidth / pdfWidth;
-          const scaleY = rootHeight / pdfHeight;
-          const scale = Math.min(scaleX, scaleY);
-          canvasEl.width = pdfWidth * scale;
-          canvasEl.height = pdfHeight * scale;
-          viewport = pdfPage.getViewport(scale);
-          const ctx = canvasEl.getContext('2d');
-          pdfPage.render({
-            canvasContext: ctx,
-            viewport,
-          });
-        });
-      };
-      const numPages = pdfDocument.numPages;
-      // TODO: REFACTOR OUT DUPLICATE
-      this.coverEl.style.opacity = 0;
+      this.pdfDocument = pdfDocument;
+      const numPages = this.pdfDocument.numPages;
       this.renderPage(currentPage);
-      window.setTimeout(() => {
-        this.coverEl.style.opacity = 1;
-      }, (INTERVAL - 1) * 1000);
       this.interval = window.setInterval(() => {
         intervalPage = intervalPage < numPages ? intervalPage + 1 : 1;
         setCurrentPage(intervalPage);
@@ -52,17 +29,35 @@ class Player extends Component {
   }
   componentWillReceiveProps(nextProps) {
     const nextCurrentPage = nextProps.currentPage;
-    this.coverEl.style.opacity = 0;
     this.renderPage(nextCurrentPage);
-    window.setTimeout(() => {
-      this.coverEl.style.opacity = 1;
-    }, (INTERVAL - 1) * 1000);
   }
   componentWillUpdate() {
     return false;
   }
   componentWillUnmount() {
     if (this.interval !== undefined) window.clearInterval(this.interval);
+  }
+  renderPage(pageNumber) {
+    this.coverEl.style.opacity = 0;
+    window.setTimeout(() => {
+      this.coverEl.style.opacity = 1;
+    }, (INTERVAL - 1) * 1000);
+    this.pdfDocument.getPage(pageNumber).then(pdfPage => {
+      let viewport = pdfPage.getViewport(1);
+      const pdfWidth = viewport.width;
+      const pdfHeight = viewport.height;
+      const scaleX = this.rootWidth / pdfWidth;
+      const scaleY = this.rootHeight / pdfHeight;
+      const scale = Math.min(scaleX, scaleY);
+      this.canvasEl.width = pdfWidth * scale;
+      this.canvasEl.height = pdfHeight * scale;
+      viewport = pdfPage.getViewport(scale);
+      const ctx = this.canvasEl.getContext('2d');
+      pdfPage.render({
+        canvasContext: ctx,
+        viewport,
+      });
+    });
   }
   render() {
     return (
