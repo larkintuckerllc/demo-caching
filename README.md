@@ -41,10 +41,10 @@ This projects utilizes different caching techniques.
 ### Playable and Default Playable API and No Caching ###
 
 The *playable.json* and *default_playable.json* files are not
-cached as specified by the server's caching header:
+cached as specified by the server's header:
 
 ```
-HEADER
+Cache-Control:no-cache, no-store, must-revalidate
 ```
 
 This means that at each execution, the application will download
@@ -58,7 +58,7 @@ browser's cache virtually indefinitely as specified by the server's
 caching header:
 
 ```
-HEADER
+Cache-Control:public, max-age=31536000
 ```
 
 This caching is for enhancing the performance of dynamically specified files;
@@ -66,29 +66,39 @@ the browser will pull the PDF from the cache if available.  At the same time,
 should the cached copy get deleted (say the browser's cache was full and it
 was purged) the PDF will be downloaded from the server.
 
-### Default and LocalStorage ###
+### Default and Local Storage ###
 
 As specified in *default_playable.json*, the *default_playable.pdf* file is stored in
-the application's LocalStorage indefinitely using the following JavaScript code:
+the application's local storage indefinitely using the following JavaScript code:
 
 ```
-CODE
+window.localStorage.setItem(DEFAULT_PLAYABLE_FILE, file);
 ```
 
-// TODO: TWO CODE BLOCKS ONE FOR DOWNLOADING
+**note:** The file is downloaded and converted into a data URL using the
+*blob* response type and *FileReader* object.
 
 This caching is for ensuring the availability of dynamically specified files;
 the PDF is guaranteed to be available even if the browser is offline.
-An application's LocalStorage is limited to 5 MB.
+An application's local storage is limited to 5 MB.
 
 ### Fallback and Application Cache ###
 
 The *fallback_playable.pdf* is stored along with the application files in
-the application cache as specified in the *MANIFEST*.
+the application cache as specified in the *index.appcache* file.
 
 This caching is for ensuring the availability of predefined files; the
-PDF is guaranteed to be available even if the browser is offline.
-
-// TODO: LIMITS ON SIZE
+PDF is guaranteed to be available even if the browser is offline. Like
+local storage, the application cache is limited (varies by browser);
+it appears that 5 MB is a safe limit.
 
 ### Other Caching Techniques ###
+
+One option, only available in Chrome and no longer being standardized
+by the W3C, is the FileSystem API.
+
+https://developer.mozilla.org/en-US/docs/Web/API/File_and_Directory_Entries_API
+
+A future option, is the service worker API.
+
+https://developer.mozilla.org/en-US/docs/Web/API/Service_Worker_API/Using_Service_Workers

@@ -5,6 +5,8 @@ const webpack = require('webpack');
 const path = require('path');
 // eslint-disable-next-line
 const HtmlWebpackPlugin = require('html-webpack-plugin');
+// eslint-disable-next-line
+const AppCachePlugin = require('appcache-webpack-plugin');
 
 const HtmlWebpackPluginConfig = new HtmlWebpackPlugin({
   template: path.join(__dirname, 'src', 'index.html'),
@@ -18,7 +20,7 @@ module.exports = {
   },
   devtool: 'eval',
   entry: {
-    'main': path.join(__dirname, 'src', 'index.jsx'),
+    main: path.join(__dirname, 'src', 'index.jsx'),
     'pdf.worker': 'pdfjs-dist/build/pdf.worker.entry',
   },
   output: {
@@ -75,6 +77,16 @@ module.exports = {
       'process.env': {
         NODE_ENV: JSON.stringify(process.env.NODE_ENV),
       },
+    }),
+    new AppCachePlugin({
+      exclude: [
+        'default_playable.json',
+        'default_playable.pdf',
+        'playable.json',
+        'playable.pdf',
+        /.*\.map$/,
+      ],
+      output: 'index.appcache',
     }),
   ],
   devServer: {
